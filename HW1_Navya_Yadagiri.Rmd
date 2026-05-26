@@ -1,0 +1,142 @@
+---
+title: "HW1"
+author: "Navya Yadagiri"
+date: "2/6/2022"
+output: html_document
+---
+getwd()
+//setwd()
+
+##### Installing the necessary packages
+```{r}
+library(dplyr)
+```
+
+###### Reading the CSV file into a data frame
+```{r}
+gm <- read.csv("gapminder.csv");
+
+```
+###### DataFrame - GAPMINDER
+```{r}
+View(gm)
+```
+
+
+<!-- Download the gapminder.csv data and read it into R. Assign the data to an object called gm. Use this data set to answer the following questions. Try to use the functions in dplyr package if possible.
+<!-- (a) How many unique countries are represented per continent? -->
+<!-- (b) Which European nation had the lowest GDP per capita in 1997? -->
+<!-- (c) According to the data available, what was the average life expectancy across each continent in -->
+<!-- the 1980s? -->
+<!-- (d) What 5 countries have the highest total GDP over all years combined? -->
+<!-- (e) What countries and years had life expectancies of at least 80 years? N.b. only output the -->
+<!-- columns of interest: country, life expectancy and year (in that order). -->
+
+###### Download the gapminder.csv data and read it into R. Assign the data to an object called gm. Use this data set to answer the following questions. Try to use the functions in dplyr package if possible.
+* How many unique countries are represented per continent?
+```{r}
+gm %>% dplyr::group_by(continent) %>% dplyr::summarise(Distinct_Country_Count = n_distinct(country)) 
+```
+
+###### Which European nation had the lowest GDP per captia in 1997?
+
+```{r}
+gm %>% filter(year == 1997, continent == 'Europe') %>% arrange(gdpPercap)%>% head(1)
+```
+
+
+##### According to the data available, what was the average life expectancy across each continent inthe 1980s?
+
+```{r Question 7(c)}
+
+gm %>% group_by(continent) %>% filter(year >= 1980 | year < 1990) %>% summarise(n = mean(lifeExp))
+```
+
+#####  Question 5: What 5 countries have the highest total GDP over all years combined? GDP =gdpPerCaptia * Population
+```{r}
+gm %>% dplyr:: mutate(Total_GDP = gdpPercap * pop)%>% dplyr::group_by(country)%>% summarise(Total_GDP = sum(Total_GDP)) %>% arrange(desc(Total_GDP)) %>% head(5)
+
+```
+
+##### Question 6: What countries and years had life expectancies of at least 80 years? N.b. only output the columns of interest: country, life expectancy and year (in that order).
+
+```{r}
+
+gm %>% dplyr::select(country, lifeExp, year) %>% dplyr::filter(gm$lifeExp >= 80) %>% dplyr::group_by(year, country) 
+```
+
+##### Problem 8: To answer this question we use R built in data set “hflights” from hflights package. Write the corresponding R code to to answer the following questions. Try se the functions in dplyr package if possible.
+
+```{r}
+#install.packages("hflights")
+# Load the library
+library(hflights)
+View(hflights)
+
+```
+
+
+##### 8 (a) Look at the first 20 instances in your data set
+```{r}
+
+hf_dataframe <- hflights 
+head(hflights, 20)
+```
+
+##### 8 (b) View all flights on January 1st
+
+```{r}
+hflights %>% filter(hflights$Month == 1, hflights$DayofMonth == 1)
+
+```
+
+##### 8 (c) Only view the part of the dataset that is related to American or United Airlines carriers
+```{r} 
+hflights %>% filter(UniqueCarrier == "UA" | UniqueCarrier == "AA")
+```
+
+#### 9 (d) Look at a subset of your dataset that contains the variables “Year, Month, DayofMonth” and any other variables that contains the words “Taxi” and “Delay”.
+
+```{r}
+x <- hflights %>% select(Year, Month, DayofMonth, contains("Taxi"), contains("Delay"))
+
+x
+```
+
+#### 9 (e) Print a subset of your dataset that includes the following variables “Departure Time”, “Arrivales Time” and “Flight Number”.
+
+```{r}
+y <- hflights %>% select(contains("Depature Time"),contains("Arrival Time"), contains("Flight Number"))
+
+
+y
+
+```
+
+
+##### 9 (f) Print all the aircrafts carriers whose departure time is delayed more than 60 minutes
+
+
+```{r}
+hflights %>% filter(hflights$DepDelay > 60) %>% group_by(UniqueCarrier) %>% distinct(UniqueCarrier)
+```
+
+##### 9 (g) Look at the carriers with their departures delays and sort them based on their departure delays
+
+```{r}
+
+hflights %>% dplyr::group_by(UniqueCarrier) %>% summarise(Total_Departure_Delay = sum(DepTime),n= n()) %>% arrange(n)
+
+```
+
+```{r}
+
+###Finding the highest correlation
+View(hflights)
+corr_matrix <- hflights.corr(method = "pearson")
+x <- hflights[hflights.columns[1:]].corr()['ArrDelay']
+
+
+
+```
+
